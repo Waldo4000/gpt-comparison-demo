@@ -4,7 +4,6 @@ import { useState } from 'react';
 export default function Home() {
   const [prompt, setPrompt] = useState('');
   const [defaultResponse, setDefaultResponse] = useState('');
-  const [customResponse, setCustomResponse] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -12,28 +11,18 @@ export default function Home() {
     if (!prompt.trim()) return;
     setLoading(true);
     setDefaultResponse('');
-    setCustomResponse('');
 
     try {
-      // Call default ChatGPT API endpoint
-      const resDefault = await fetch('/api/generateDefault', {
+      // Call the default ChatGPT API endpoint with your master prompt
+      const res = await fetch('/api/generateDefault', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt }),
       });
-      const dataDefault = await resDefault.json();
-      setDefaultResponse(dataDefault.result);
-
-      // Call custom GPT API endpoint
-      const resCustom = await fetch('/api/generateCustom', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt }),
-      });
-      const dataCustom = await resCustom.json();
-      setCustomResponse(dataCustom.result);
+      const data = await res.json();
+      setDefaultResponse(data.result);
     } catch (error) {
-      console.error('Error fetching responses:', error);
+      console.error('Error fetching default GPT response:', error);
     } finally {
       setLoading(false);
     }
@@ -44,8 +33,7 @@ export default function Home() {
       <header className="header">
         <h1>GPT Comparison Demo</h1>
         <p>
-          Enter a prompt below to see side-by-side responses from Default ChatGPT and
-          your Custom GPT.
+          Enter a prompt below to compare responses between Default ChatGPT and your Custom GPT.
         </p>
       </header>
 
@@ -64,6 +52,7 @@ export default function Home() {
         </form>
 
         <div className="results">
+          {/* Default ChatGPT Response */}
           <div className="result-card">
             <h2>Default ChatGPT</h2>
             <div className="result-content">
@@ -71,11 +60,19 @@ export default function Home() {
             </div>
           </div>
 
+          {/* Embedded Custom GPT via iframe */}
           <div className="result-card">
             <h2>Custom GPT</h2>
-            <div className="result-content">
-              {customResponse ? customResponse : <p>No response yet.</p>}
-            </div>
+            <iframe
+              src="https://chatgpt.com/gpts/editor/g-y09ESAWXM"
+              title="Custom GPT"
+              style={{
+                width: '100%',
+                height: '400px',
+                border: 'none',
+                borderRadius: '8px',
+              }}
+            ></iframe>
           </div>
         </div>
       </main>
