@@ -18,7 +18,7 @@ export default async function handler(req, res) {
 
   try {
     const response = await openai.createChatCompletion({
-      model: 'gpt-3.5-turbo', // Change to "gpt-4" if you have access
+      model: 'gpt-3.5-turbo', // or "gpt-4" if available
       messages: [
         {
           role: 'system',
